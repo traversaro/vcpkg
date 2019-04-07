@@ -12,15 +12,12 @@
 
 include(vcpkg_common_functions)
 
-vcpkg_download_distfile(ARCHIVE
-    URLS "https://osrf-distributions.s3.amazonaws.com/ign-common/releases/ignition-common-1.1.1.tar.bz2"
-    FILENAME "ignition-common-1.1.1.tar.bz2"
-    SHA512 b1f6effa93c7ffe97303f07eee6808f2f8d4564ccddabb80191abe9e6031d8fb644cb7ad842e1fe393856af0a098455dd5fe1feb44a1aa95245c625f9b0ef2b7
-)
-
-vcpkg_extract_source_archive_ex(
+vcpkg_from_bitbucket(
     OUT_SOURCE_PATH SOURCE_PATH
-    ARCHIVE ${ARCHIVE} 
+    REPO ignitionrobotics/ign-fuel-tools
+	REF ignition-fuel-tools1_1.2.0
+	SHA512 5ed8d1429e1f5c0716e06840a4163f7e79a614cf7b6ff326adb69d35639e3ec5f1862edc41c6dc0bd21b16db6d13bee509831a66b10ca2ae3999649f1554a68e
+    HEAD_REF ign-fuel-tools1
 )
 
 vcpkg_configure_cmake(
@@ -32,14 +29,18 @@ vcpkg_configure_cmake(
 vcpkg_install_cmake()
 
 # Fix cmake targets location
-vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake/ignition-common1")
+vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake/ignition-fuel_tools1")
 
 # Remove debug files
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include 
-                    ${CURRENT_PACKAGES_DIR}/debug/lib/cmake)
+                    ${CURRENT_PACKAGES_DIR}/debug/lib/cmake
+                    ${CURRENT_PACKAGES_DIR}/debug/share)
 
+# Move the share directory to have a name consistent with the cmake package name
+file(RENAME ${CURRENT_PACKAGES_DIR}/share/ignition-fuel-tools1 ${CURRENT_PACKAGES_DIR}/share/ignition-fuel_tools1)
+                    
 # Handle copyright
-file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/ignition-common1 RENAME copyright)
+file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/ignition-fuel-tools1 RENAME copyright)
 
 # Post-build test for cmake libraries
-vcpkg_test_cmake(PACKAGE_NAME ignition-common1)
+vcpkg_test_cmake(PACKAGE_NAME ignition-fuel_tools1)

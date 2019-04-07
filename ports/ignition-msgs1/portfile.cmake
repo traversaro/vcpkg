@@ -23,20 +23,35 @@ vcpkg_extract_source_archive_ex(
     ARCHIVE ${ARCHIVE} 
 )
 
+if(CMAKE_HOST_WIN32 AND NOT VCPKG_TARGET_ARCHITECTURE MATCHES "x64" AND NOT VCPKG_TARGET_ARCHITECTURE MATCHES "x86")
+  message(FATAL_ERROR "Cross-targetting ignition-msgs1 is currently not supported..")
+endif()
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
-    PREFER_NINJA # Disable this option if project cannot be built with Ninja
+    # PREFER_NINJA ignition-msgs1 does not support ninja
     OPTIONS -DBUILD_TESTING=OFF
 )
 
+# For generating the messages, the custom generated protobuf generated needs to have 
+# protobuf libraries in the path 
+set(_path $ENV{PATH})
+set(ENV{PATH})
+vcpkg_add_to_path(${CURRENT_INSTALLED_DIR}/bin)
+vcpkg_add_to_path(${CURRENT_INSTALLED_DIR}/debug/bin)
+
 vcpkg_install_cmake()
+# Restore old path 
+set(ENV{PATH} ${_path})
+
 
 # Fix cmake targets location
 vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake/ignition-msgs1")
 
 # Remove debug files
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include 
-                    ${CURRENT_PACKAGES_DIR}/debug/lib/cmake)
+                    ${CURRENT_PACKAGES_DIR}/debug/lib/cmake
+                    ${CURRENT_PACKAGES_DIR}/debug/share)
 
 # Handle copyright
 file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/ignition-msgs1 RENAME copyright)

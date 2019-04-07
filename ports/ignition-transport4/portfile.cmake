@@ -13,9 +13,9 @@
 include(vcpkg_common_functions)
 
 vcpkg_download_distfile(ARCHIVE
-    URLS "https://osrf-distributions.s3.amazonaws.com/ign-common/releases/ignition-common-1.1.1.tar.bz2"
-    FILENAME "ignition-common-1.1.1.tar.bz2"
-    SHA512 b1f6effa93c7ffe97303f07eee6808f2f8d4564ccddabb80191abe9e6031d8fb644cb7ad842e1fe393856af0a098455dd5fe1feb44a1aa95245c625f9b0ef2b7
+    URLS "https://osrf-distributions.s3.amazonaws.com/ign-transport/releases/ignition-transport4-4.0.0.tar.bz2"
+    FILENAME "ignition-transport4-4.0.0.tar.bz2"
+    SHA512 90facd527e953d3319b4b3b7c5efa610d6c965fcaaf053b8b32039825fccca89c17f153ffec5c0562d4d3d534741f3d6c1a603eb2c75fd5cb217bf22a6d6e503
 )
 
 vcpkg_extract_source_archive_ex(
@@ -32,14 +32,15 @@ vcpkg_configure_cmake(
 vcpkg_install_cmake()
 
 # Fix cmake targets location
-vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake/ignition-common1")
+vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake/ignition-transport4")
 
 # Remove debug files
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include 
-                    ${CURRENT_PACKAGES_DIR}/debug/lib/cmake)
+                    ${CURRENT_PACKAGES_DIR}/debug/lib/cmake
+                    ${CURRENT_PACKAGES_DIR}/debug/share)
 
 # Handle copyright
-file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/ignition-common1 RENAME copyright)
+file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/ignition-transport4 RENAME copyright)
 
 # Post-build test for cmake libraries
-vcpkg_test_cmake(PACKAGE_NAME ignition-common1)
+vcpkg_test_cmake(PACKAGE_NAME ignition-transport4)

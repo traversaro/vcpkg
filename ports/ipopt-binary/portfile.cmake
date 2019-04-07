@@ -31,8 +31,11 @@ vcpkg_extract_source_archive_ex(
 )
 
 # Just install the content directly 
-file(INSTALL ${SOURCE_PATH} DESTINATION ${CURRENT_PACKAGES_DIR})
-
+file(INSTALL ${SOURCE_PATH}/include DESTINATION ${CURRENT_PACKAGES_DIR})
+file(INSTALL ${SOURCE_PATH}/bin DESTINATION ${CURRENT_PACKAGES_DIR})
+file(INSTALL ${SOURCE_PATH}/lib DESTINATION ${CURRENT_PACKAGES_DIR})
+file(INSTALL ${SOURCE_PATH}/bin DESTINATION ${CURRENT_PACKAGES_DIR}/debug)
+file(INSTALL ${SOURCE_PATH}/lib DESTINATION ${CURRENT_PACKAGES_DIR}/debug)
 
 # vcpkg_configure_cmake(
 #    SOURCE_PATH ${SOURCE_PATH}
@@ -45,5 +48,5 @@ file(INSTALL ${SOURCE_PATH} DESTINATION ${CURRENT_PACKAGES_DIR})
 #vcpkg_install_cmake()
 
 # Handle copyright
-# file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/ipopt-binary RENAME copyright)
+file(INSTALL ${SOURCE_PATH}/share/coin/doc/Ipopt/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/ipopt-binary RENAME copyright)
 
