@@ -35,14 +35,14 @@ vcpkg_configure_cmake(
 
 # For generating the messages, the custom generated protobuf generated needs to have 
 # protobuf libraries in the path 
-set(_path $ENV{PATH})
-set(ENV{PATH})
-vcpkg_add_to_path(${CURRENT_INSTALLED_DIR}/bin)
-vcpkg_add_to_path(${CURRENT_INSTALLED_DIR}/debug/bin)
+#set(_path $ENV{PATH})
+#set(ENV{PATH})
+#vcpkg_add_to_path(${CURRENT_INSTALLED_DIR}/bin)
+#vcpkg_add_to_path(${CURRENT_INSTALLED_DIR}/debug/bin)
 
 vcpkg_install_cmake()
 # Restore old path 
-set(ENV{PATH} ${_path})
+#set(ENV{PATH} ${_path})
 
 
 # Fix cmake targets location

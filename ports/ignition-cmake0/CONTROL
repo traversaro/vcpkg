@@ -1,3 +1,6 @@
 Source: ignition-cmake0
 Version: 0.6.2-2
 Description: CMake helper functions for building robotic applications
+Build-Depends: ignition-modularscripts
+
+
