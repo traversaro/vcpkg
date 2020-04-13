@@ -4,6 +4,8 @@
 #include <vcpkg/portfileprovider.h>
 #include <vcpkg/sourceparagraph.h>
 
+#include <string>
+
 namespace vcpkg::PortFileProvider
 {
     MapPortFileProvider::MapPortFileProvider(const std::unordered_map<std::string, SourceControlFileLocation>& map)
@@ -24,33 +26,74 @@ namespace vcpkg::PortFileProvider
     }
 
     PathsPortFileProvider::PathsPortFileProvider(const vcpkg::VcpkgPaths& paths,
-                                                 const std::vector<std::string>* ports_dirs_paths)
+        const std::vector<std::string>* ports_dirs_paths)
         : filesystem(paths.get_filesystem())
     {
         auto& fs = Files::get_real_filesystem();
         if (ports_dirs_paths)
         {
-            for (auto&& overlay_path : *ports_dirs_paths)
+            std::vector<std::string> processed_ports_dirs_paths =
+                PathsPortFileProvider::process_ports_dirs_by_expanding_files(ports_dirs_paths);
+            for (auto&& overlay_path : processed_ports_dirs_paths)
             {
                 if (!overlay_path.empty())
                 {
                     auto overlay = fs::stdfs::canonical(fs::u8path(overlay_path));
 
                     Checks::check_exit(VCPKG_LINE_INFO,
-                                       filesystem.exists(overlay),
-                                       "Error: Path \"%s\" does not exist",
-                                       overlay.string());
+                        filesystem.exists(overlay),
+                        "Error: Path \"%s\" does not exist",
+                        overlay.string());
 
                     Checks::check_exit(VCPKG_LINE_INFO,
-                                       fs::is_directory(fs.status(VCPKG_LINE_INFO, overlay)),
-                                       "Error: Path \"%s\" must be a directory",
-                                       overlay.string());
+                        fs::is_directory(fs.status(VCPKG_LINE_INFO, overlay)),
+                        "Error: Path \"%s\" must be a directory",
+                        overlay.string());
 
                     ports_dirs.emplace_back(overlay);
                 }
             }
         }
         ports_dirs.emplace_back(paths.ports);
+    }
+
+    std::vector<std::string> PathsPortFileProvider::process_ports_dirs_by_expanding_files(const std::vector<std::string>* ports_dirs_paths)
+    {
+        std::vector<std::string> expandend_ports;
+        for (auto&& overlay_path : *ports_dirs_paths)
+        {
+            if (!overlay_path.empty())
+            {
+                auto overlay = fs::stdfs::canonical(fs::u8path(overlay_path));
+
+                Checks::check_exit(VCPKG_LINE_INFO,
+                    filesystem.exists(overlay),
+                    "Error: Path \"%s\" does not exist",
+                    overlay.string());
+
+                if (filesystem.is_directory(overlay)) {
+                    expandend_ports.emplace_back(overlay.string());
+                } else if (filesystem.is_regular_file(overlay)) {
+                    std::vector<std::string> ports_dirs_from_file = read_ports_dirs_from_file(overlay.string());
+                    expandend_ports.insert(expandend_ports.end(), ports_dirs_from_file.begin(), ports_dirs_from_file.end());
+                }
+            }
+        }
+
+        return expandend_ports;
+    }
+
+    std::vector<std::string> PathsPortFileProvider::read_ports_dirs_from_file(const std::string& ports_file_path)
+    {
+        auto contents = filesystem.read_lines(ports_file_path);
+        if (contents)
+        {
+            return *contents.get();
+        }
+        else
+        {
+            return {};
+        }
     }
 
     ExpectedS<const SourceControlFileLocation&> PathsPortFileProvider::get_control_file(const std::string& spec) const
