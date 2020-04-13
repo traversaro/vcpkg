@@ -30,30 +30,42 @@ namespace vcpkg::PortFileProvider
         : filesystem(paths.get_filesystem())
     {
         auto& fs = Files::get_real_filesystem();
+
+        std::vector<std::string> overlay_ports_dirs;
+
         if (ports_dirs_paths)
         {
-            std::vector<std::string> processed_ports_dirs_paths =
-                PathsPortFileProvider::process_ports_dirs_by_expanding_files(ports_dirs_paths);
-            for (auto&& overlay_path : processed_ports_dirs_paths)
+            overlay_ports_dirs.insert(overlay_ports_dirs.end(), ports_dirs_paths->begin(), ports_dirs_paths->end());
+        }
+
+        auto default_overlay_ports_file = paths.root / "default-overlay-ports.txt";
+        if (filesystem.exists(default_overlay_ports_file))
+        {
+            overlay_ports_dirs.emplace_back(default_overlay_ports_file.string());
+        }
+
+        std::vector<std::string> processed_ports_dirs_paths =
+            PathsPortFileProvider::process_ports_dirs_by_expanding_files(&overlay_ports_dirs);
+        for (auto&& overlay_path : processed_ports_dirs_paths)
+        {
+            if (!overlay_path.empty())
             {
-                if (!overlay_path.empty())
-                {
-                    auto overlay = fs::stdfs::canonical(fs::u8path(overlay_path));
+                auto overlay = fs::stdfs::canonical(fs::u8path(overlay_path));
 
-                    Checks::check_exit(VCPKG_LINE_INFO,
-                        filesystem.exists(overlay),
-                        "Error: Path \"%s\" does not exist",
-                        overlay.string());
+                Checks::check_exit(VCPKG_LINE_INFO,
+                    filesystem.exists(overlay),
+                    "Error: Path \"%s\" does not exist",
+                    overlay.string());
 
-                    Checks::check_exit(VCPKG_LINE_INFO,
-                        fs::is_directory(fs.status(VCPKG_LINE_INFO, overlay)),
-                        "Error: Path \"%s\" must be a directory",
-                        overlay.string());
+                Checks::check_exit(VCPKG_LINE_INFO,
+                    fs::is_directory(fs.status(VCPKG_LINE_INFO, overlay)),
+                    "Error: Path \"%s\" must be a directory",
+                    overlay.string());
 
-                    ports_dirs.emplace_back(overlay);
-                }
+                ports_dirs.emplace_back(overlay);
             }
         }
+
         ports_dirs.emplace_back(paths.ports);
     }
 
