@@ -4,7 +4,7 @@
 ##
 ## ## The following variables are available:
 ## ```cmake
-## VCPKG_TARGET_IS_<target>                 with <target> being one of the following: WINDOWS, UWP, LINUX, OSX, ANDROID, FREEBSD. only defined if <target>
+## VCPKG_TARGET_IS_<target>                 with <target> being one of the following: WINDOWS, UWP, LINUX, OSX, ANDROID, FREEBSD, EMSCRIPTEN. only defined if <target>
 ## VCPKG_HOST_PATH_SEPARATOR                Host specific path separator (USAGE: "<something>${VCPKG_HOST_PATH_SEPARATOR}<something>"; only use and pass variables with VCPKG_HOST_PATH_SEPARATOR within "")
 ## VCPKG_HOST_EXECUTABLE_SUFFIX             executable suffix of the host
 ## VCPKG_TARGET_EXECUTABLE_SUFFIX           executable suffix of the target
@@ -40,6 +40,8 @@ elseif(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
 elseif(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "MinGW")
     set(VCPKG_TARGET_IS_WINDOWS 1)
     set(VCPKG_TARGET_IS_MINGW 1)
+elseif(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    set(VCPKG_TARGET_IS_EMSCRIPTEN 1)
 endif()
 
 #Helper variable to identify the host path separator.
@@ -59,6 +61,8 @@ endif()
 
 if(VCPKG_TARGET_IS_WINDOWS)
     set(VCPKG_TARGET_EXECUTABLE_SUFFIX ".exe")
+elseif(VCPKG_TARGET_IS_EMSCRIPTEN)
+    set(VCPKG_TARGET_EXECUTABLE_SUFFIX ".js")
 else()
     set(VCPKG_TARGET_EXECUTABLE_SUFFIX "")
 endif()
