@@ -1,0 +1,6 @@
+{
+  "name": "ycm-cmake-modules",
+  "version": "0.12.2",
+  "description": "Extra CMake Modules for YARP and friends",
+  "homepage": "https://github.com/robotology/ycm"
+}
