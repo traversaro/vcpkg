@@ -10,14 +10,32 @@ vcpkg_cmake_configure(
     SOURCE_PATH ${SOURCE_PATH}
     OPTIONS
         -DYARP_COMPILE_EXECUTABLES=OFF
+        # vcpkg does not support .dll installed in lib
+        -DYARP_DYNAMIC_PLUGINS_INSTALL_DIR="bin/yarp"
+        # Workaround as tcpros otherwise is always created
+        -DSKIP_tcpros=ON
+        -DSKIP_rossrv=ON
+        # Temporary, to quickly check compilation
+        -DYARP_COMPILE_CARRIER_PLUGINS=OFF
+        -DYARP_COMPILE_DEVICE_PLUGINS=OFF
 )
 
 vcpkg_cmake_install()
 file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
+
+# YARP installs a lot of CMake package config files
+file(GLOB COMPONENTS_CMAKE_PACKAGE_NAMES
+     LIST_DIRECTORIES TRUE
+     RELATIVE "${CURRENT_PACKAGES_DIR}/lib/cmake/"
+              "${CURRENT_PACKAGES_DIR}/lib/cmake/*")
+
+foreach(COMPONENT_CMAKE_PACKAGE_NAME IN LISTS COMPONENTS_CMAKE_PACKAGE_NAMES)
+    vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake/${COMPONENT_CMAKE_PACKAGE_NAME}"
+                              TARGET_PATH "share/${COMPONENT_CMAKE_PACKAGE_NAME}"
+                              DO_NOT_DELETE_PARENT_CONFIG_PATH)
+endforeach()
+
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
-
-vcpkg_cmake_config_fixup()
-
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
 
 # Handle post-build CMake instructions
