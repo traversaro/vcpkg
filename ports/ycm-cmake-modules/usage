@@ -1,6 +1,6 @@
 The package YCM provides CMake modules:
 
-    find_package(YCM CONFIG REQUIRED NO_MODULE)
+    find_package(YCM CONFIG REQUIRED)
     include(InstallBasicPackageFiles)
     include(AddUninstallTarget)
 

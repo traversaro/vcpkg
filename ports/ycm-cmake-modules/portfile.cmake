@@ -14,7 +14,8 @@ vcpkg_configure_cmake(
 vcpkg_install_cmake()
 
 include(GNUInstallDirs) # for CMAKE_INSTALL_DATADIR
-vcpkg_fixup_cmake_targets(CONFIG_PATH "${CMAKE_INSTALL_DATADIR}/cmake/ycm")
+vcpkg_fixup_cmake_targets(CONFIG_PATH "share/YCM"
+                          TARGET_PATH "share/YCM")
 
 # Remove debug files
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug)

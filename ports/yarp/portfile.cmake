@@ -6,6 +6,18 @@ vcpkg_from_github(
     HEAD_REF master
 )
 
+set(YARP_ADDITIONAL_CMAKE_OPTIONS "")
+
+if(VCPKG_CROSSCOMPILING AND VCPKG_TARGET_IS_UWP)
+    # CMake buildsystem of YARP inspect the environment via try_run,
+    # for cross-compiling try_run is not available so we need to set the results
+    list(APPEND YARP_ADDITIONAL_CMAKE_OPTIONS "-DYARP_FLOAT32_IS_IEC559=1")
+    list(APPEND YARP_ADDITIONAL_CMAKE_OPTIONS "-DYARP_FLOAT64_IS_IEC559=1")
+    list(APPEND YARP_ADDITIONAL_CMAKE_OPTIONS "-DYARP_DBL_EXP_DIG=4")
+    list(APPEND YARP_ADDITIONAL_CMAKE_OPTIONS "-DYARP_FLT_EXP_DIG=3")
+    list(APPEND YARP_ADDITIONAL_CMAKE_OPTIONS "-DYARP_LDBL_EXP_DIG=4")
+endif()
+
 vcpkg_cmake_configure(
     SOURCE_PATH ${SOURCE_PATH}
     OPTIONS
@@ -18,6 +30,7 @@ vcpkg_cmake_configure(
         # Temporary, to quickly check compilation
         -DYARP_COMPILE_CARRIER_PLUGINS=OFF
         -DYARP_COMPILE_DEVICE_PLUGINS=OFF
+        ${YARP_ADDITIONAL_CMAKE_OPTIONS}
 )
 
 vcpkg_cmake_install()
