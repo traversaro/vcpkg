@@ -11388,6 +11388,10 @@
       "baseline": "2022-03-06",
       "port-version": 0
     },
+    "ycm-cmake-modules": {
+      "baseline": "0.18.6",
+      "port-version": 0
+    },
     "yoctolib": {
       "baseline": "2.1.12708",
       "port-version": 0
