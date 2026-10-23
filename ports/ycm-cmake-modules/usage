@@ -1,0 +1,6 @@
+ycm-cmake-modules provides CMake modules:
+
+    find_package(YCM CONFIG REQUIRED)
+    include(InstallBasicPackageFiles)
+
+YCM's optional third-party module collection is disabled.

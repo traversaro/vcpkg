@@ -8,22 +8,14 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
-vcpkg_from_github(
-    OUT_SOURCE_PATH YCM_SOURCE_PATH
-    REPO robotology/ycm-cmake-modules
-    REF v0.18.2
-    SHA512 2df4554bf9cd104ddc98ea8437e265fc5098c8da9724d1cab5b850791d53118ae01818d14161093becf88adfded53fddaf0dd3f09a25a3d256794380a6ebccc2
-)
-
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         -DBUILD_TESTING=OFF
         -DRRUC_BUILD_TOOL=OFF
         -DRRUC_INSTALL=ON
-        -DRRUP_USE_SYSTEM_YCM=OFF
-        -DFETCHCONTENT_FULLY_DISCONNECTED=ON
-        "-DFETCHCONTENT_SOURCE_DIR_YCM=${YCM_SOURCE_PATH}"
+        -DRRUP_USE_SYSTEM_YCM=ON
+        "-DYCM_DIR=${CURRENT_HOST_INSTALLED_DIR}/share/ycm-cmake-modules"
 )
 vcpkg_cmake_install()
 vcpkg_cmake_config_fixup(
